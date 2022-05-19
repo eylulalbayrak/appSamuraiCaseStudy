@@ -4,24 +4,28 @@ import json
 
 def calculatePrice(data):
 
-    if 'items' not in data:
-        return data['count'] * data['price']
+    # item with list of items inside
+    if 'items' in data:
+        return data["count"] * calculatePrice(data["items"])
 
-    elif not isinstance(data['items'], list):
-        return data['count'] * calculatePrice(data['items'])
+    # single item
+    if 'price' in data:
+        return data["count"] * data["price"]
 
+    # list of items
     else:
-        sum = 0
-
-        for key in data['items']:
-            sum += calculatePrice(key)
-
-        return data['count'] * sum
+        total = 0
+        for item in data:
+            total += calculatePrice(item)
+        return total
 
 
 def getJSON(url):
+
+    # opening the url
     source = urlopen(url)
 
+    # deserializing the JSON string into Python dictionary
     dataJSON = json.loads(source.read())
 
     return dataJSON
@@ -29,7 +33,7 @@ def getJSON(url):
 
 if __name__ == '__main__':
 
-    url = "https://prod-storyly-media.s3.eu-west-1.amazonaws.com/test-scenarios/sample_2.json"
+    url = "https://prod-storyly-media.s3.eu-west-1.amazonaws.com/test-scenarios/sample_3.json"
 
     data = getJSON(url)
 
